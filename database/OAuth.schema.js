@@ -6,7 +6,7 @@ const OAuthSchema = new Schema({
   refreshToken: { type: String },
 
 },{
-  timestamps: true
+  timestamps: true,
 });
 
 module.exports = model('O_Auth', OAuthSchema);
