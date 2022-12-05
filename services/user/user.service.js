@@ -7,6 +7,21 @@ module.exports = {
   findOneByParams: async (filter = {}) => {
     return await User.findOne(filter)
   },
+  findAuth: async (userId) => {
+    return User.aggregate([
+      {
+        $match: {_id: userId}
+      },
+      {
+        $lookup:{
+          from: 'O_Auth',
+          localField: '_id',
+          foreignField: 'User',
+          as: 'O_Auth'
+        }
+      }
+    ])
+  },
   create: async (userObject) => {
     return await User.create(userObject)
   },

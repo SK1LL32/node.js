@@ -1,5 +1,5 @@
-const userService = require('../../service/user/user.service');
-const oauthService = require('../../service/Auth/auth.service');
+const userService = require('../../services/user/user.service');
+const oauthService = require('../../services/Auth/auth.service');
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -13,7 +13,7 @@ module.exports = {
   },
   getById: async (req, res, next) => {
     try {
-      const users = await userService.findOneByParams();
+      const users = await userService.findAuth();
 
       res.json(users)
     } catch (e) {

@@ -1,5 +1,5 @@
 const userValidator = require("../../validator/user/user.validator")
-const userService = require("../../service/user/user.service");
+const userService = require("../../services/user/user.service");
 const ApiError = require("../../error/ApiError");
 const {idValidator} = require("../../validator/common.validators");
 
