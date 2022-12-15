@@ -15,11 +15,11 @@ app.use('/auth', authRouter);
 app.use('/users', userRouter);
 
 // app.use((err, req, res, next) => {
-//   res.status(err.status || 500).json({
-//     massage: err.massage || 500,
-//     status: err.status || 500
+//    res.status(err.status || 500).json({
+//      massage: err.massage || 500,
+//      status: err.status || 500
 //   });
-// });
+//  });
 
 mongoose.set('strictQuery', false);
 
