@@ -7,9 +7,29 @@ module.exports = {
   findByOneParams: async (filter = {}) => {
     return User.findOne(filter)
   },
-  createUser: async (userObject) => {
-    return User.create(userObject)
+  findAggregate : async (userId) => {
+    const res = await User.aggregate([
+      {
+        $match: {
+          _id: userId
+        }
+      },
+      {
+        $lookup: {
+          from: 'ActionToken',
+          localField: '_id',
+          foreignField: 'User',
+          as: 'ActionToken',
+        }
+      }
+    ]);
+
+    return res[0];
   },
+  createUserWithHashPassword: async (e) => {
+    return User.createUserWithHashPassword(e);
+  },
+  
   updateUser: async (userId, newInfo) => {
     return User.findByIdAndUpdate(userId, newInfo, { new: true })
   },

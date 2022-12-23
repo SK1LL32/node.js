@@ -1,28 +1,26 @@
-const authService = require('../service/auth.service');
-const Auth = require('../database/Auth.schema');
-const ActionToken = require('../database/ActionToken');
-const OldPassword = require('../database/OldPassword');
-const emailService = require('../service/email.service');
-const userService = require('../service/user.service');
+const { userService, authService, emailService, smsService } = require('../service')
+const { Auth, Action, OldPassword } = require('../database');
+const smsTemplate = require('../helper/sms.helper');
+const { HI } = require('../enum/sms.enam')
 const { WELCOME, FORGOT_PASS } = require('../enum/email.enum');
 const { FORGOT_PASSWORD } = require('../enum/tokenAction.enum');
 const { FRONTEND_URL } = require('../config/config');
+const User = require('../database/user.schema')
 
 module.exports = {
   login: async (req, res, next) => {
     try {
       const { user, body } = req;
+      await Promise.allSettled([
+        emailService.sendEmail(user.email, WELCOME, { userName: user.name }),
+        smsService.smsSend(smsTemplate[HI]({ name: user.name }), user.phone)
+      ]);
 
-      await emailService.sendEmail(user.email, WELCOME, { userName: user.name });
-
-      await authService.comparePassword(user.password, body.password);
+      await user.comparePasswords(body.password);
 
       const tokenPair = authService.generationTokenPair({ id: user._id });
 
-      await Auth.create({
-        ...tokenPair,
-        _user_id: user._id
-      });
+      await Auth.create({ ...tokenPair, _user_id: user._id });
 
       res.json({
         user,
@@ -54,7 +52,7 @@ module.exports = {
       const actionToken = authService.generationActionToken(FORGOT_PASSWORD, { email: email });
       const forgotPassFEUrl = `${FRONTEND_URL}/password/new?token=${actionToken}`;
 
-      await ActionToken.create({ token: actionToken, tokenType: FORGOT_PASSWORD, _user_id: _id });
+      await Action.create({ token: actionToken, tokenType: FORGOT_PASSWORD, _user_id: _id });
       await emailService.sendEmail(email, FORGOT_PASS, { url: forgotPassFEUrl, userName: name });
 
       res.json('ok');
@@ -70,8 +68,8 @@ module.exports = {
 
       await OldPassword.create({ _user_id: user._id, password: user.password });
 
-      await ActionToken.deleteOne({ token: req.get('Authorization') });
-      await userService.updateOnne({ _id: user._id }, { password: hashPassword })
+      await Action.deleteOne({ token: req.get('Authorization') });
+      await User.updateOne({ _id: user._id }, { password: hashPassword })
 
       res.json('ok')
     } catch (e) {

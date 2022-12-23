@@ -1,7 +1,5 @@
-const userService = require('../service/user.service');
-const authService = require('../service/auth.service')
-const emailService = require('../service/email.service')
-const { FORGOT_PASS, WELCOME } = require('../enum/email.enum')
+const { userService, emailService, s3Service } = require('../service');
+const { WELCOME } = require('../enum/email.enum');
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -24,9 +22,7 @@ module.exports = {
   create: async (req, res, next) => {
     try {
 
-      const hashPassword = await authService.hashPassword(req.body.password);
-
-      const user = await userService.createUser({ ...req.body, password: hashPassword });
+      const user = await userService.createUserWithHashPassword(req.body);
 
       await emailService.sendEmail('myroslav191@gmail.com', WELCOME);
 
@@ -55,6 +51,17 @@ module.exports = {
       res.status(201).json(user);
     } catch (e) {
       next(e);
+    }
+  },
+  uploadAvatar: async (req, res, next) => {
+    try {
+      const uploadedData = await s3Service.uploadPublicFile(req.files.avatar, 'user', req.user._id);
+
+      const updatedUser = await userService.updateUser(req.user._id, { avatar: uploadedData.Location })
+
+      res.json(updatedUser)
+    } catch (e) {
+      next(e)
     }
   }
 };

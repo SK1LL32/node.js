@@ -1,8 +1,7 @@
 const router = require('express').Router();
 
 const controller = require('../controller/user.controller');
-const userMiddleware = require('../middleware/user.middleware');
-const authMiddleware = require('../middleware/auth.middleware');
+const { userMiddleware, authMiddleware, fileMiddleware } = require('../middleware');
 
 router.get('/', controller.getAll);
 router.post('/', userMiddleware.isNewUserValid, userMiddleware.checkIsEmailUnique, controller.create);
@@ -26,6 +25,14 @@ router.delete(
   userMiddleware.isUserIdValid,
   authMiddleware.checksAccessToken,
   controller.delete
+);
+
+router.patch(
+  '/:userId/avatar',
+  fileMiddleware.checkUploadImage,
+  userMiddleware.isUserIdValid,
+  userMiddleware.getUserDynamically('userId', 'params', '_id'),
+  controller.uploadAvatar
 );
 
 module.exports = router;

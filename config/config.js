@@ -3,8 +3,8 @@ module.exports = {
   MONGO_URL: process.env.MONGO_URL || 'mongodb://localhost:27017/minijunior2022',
   FRONTEND_URL: process.env.FRONTEND_URL || 'https:google.com',
 
-  ACCESS_TOKEN: process.env.ACCESS_TOKEN,
-  REFRESH_TOKEN: process.env.REFRESH_TOKEN,
+  ACCESS_TOKEN: process.env.ACCESS_TOKEN || 'qwe' ,
+  REFRESH_TOKEN: process.env.REFRESH_TOKEN || 'qwe123es',
 
   NO_REPLY_EMAIL: process.env.NO_REPLY_EMAIL,
   NO_REPLY_EMAIL_PASSWORD: process.env.NO_REPLY_EMAIL_PASSWORD,
@@ -15,5 +15,10 @@ module.exports = {
 
   TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
   TWILIO_SERVICE_SID: process.env.TWILIO_SERVICE_SID,
-  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+
+  S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+  S3_BUCKET_REGION: process.env.S3_BUCKET_REGION,
+  S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+  S3_SECRET_KEY: process.env.S3_SECRET_KEY
 }
