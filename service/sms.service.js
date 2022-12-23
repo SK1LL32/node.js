@@ -1,18 +1,19 @@
-const client = require('twilio');
+const twilio = require('twilio');
 
-const {} = require('config/config')
-
-// client.messages
-//   .create({
-//     body: 'хвх',
-//     messagingServiceSid: 'MG7cdec9fa3bdf782678a3b7e8cec75035',
-//     to: '+33780261761'
-//   })
-//   .then(message => console.log(message.sid))
-//   .done();
+const { TWILIO_ACCOUNT_SID, TWILIO_SERVICE_SID, TWILIO_AUTH_TOKEN } = require('../config/config');
+const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const ApiError = require('../error/ApiError');
 
 module.exports = {
-  smsSend: () => {
-
+  smsSend: async (message, phone) => {
+    try {
+      const smsResp = await client.messages.create({
+        body: message,
+        to: phone,
+        messagingServiceSid: TWILIO_SERVICE_SID
+      });
+    } catch (e) {
+      throw new ApiError('sms no valid', 401)
+    }
   }
-}
+};

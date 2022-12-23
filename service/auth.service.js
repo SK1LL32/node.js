@@ -23,7 +23,7 @@ module.exports = {
   },
 
   compareOldPasswords: (hashPassword, password) => {
-    return bcrypt.compare(password, hashPassword);
+    return bcrypt.compare(password, hashPassword)
   },
 
   generationActionToken: (actionType, dataToSign = {}) => {
@@ -63,7 +63,7 @@ module.exports = {
     }
   },
 
-  checkActionToken: (token = '', actionType) => {
+  checkActionToken: (token, actionType) => {
     try {
       let secretWord = '';
 

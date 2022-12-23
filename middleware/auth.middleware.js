@@ -1,11 +1,8 @@
 const authValidator = require('../validator/auth.validator');
-const authService = require('../service/auth.service');
-const Auth = require('../database/Auth.schema');
-const Action = require('../database/ActionToken');
+const { authService } = require('../service');
+const { Auth, Action, OldPassword } = require('../database')
 const ApiError = require('../error/ApiError');
-const OldPassword = require('../database/OldPassword');
 const { FORGOT_PASSWORD } = require('../enum/tokenAction.enum');
-const { compareOldPasswords } = require('../service/auth.service');
 const { tokenTypeEnum } = require('../enum');
 
 module.exports = {
@@ -77,7 +74,7 @@ module.exports = {
 
       authService.checkActionToken(actionToken, FORGOT_PASSWORD);
 
-      const tokenInfo = await Action.findOne({ actionToken }).populate('_user_id');
+      const tokenInfo = await Action.findOne({ token: actionToken, tokenType: FORGOT_PASSWORD })
       console.log(tokenInfo);
 
       if (!tokenInfo) {
@@ -93,14 +90,13 @@ module.exports = {
   checkOldPasswords: async (req, res, next) => {
     try {
       const { user, body } = req;
-
       const oldPasswords = await OldPassword.find({ _user_id: user._id }).lean();
 
       if (!oldPasswords.length) {
         return next();
       }
 
-      const results = await Promise.all(oldPasswords.map((record) => compareOldPasswords(record.password, body.password)));
+      const results = await Promise.all(oldPasswords.map((record) => authService.compareOldPasswords(record.password, body.password)));
 
       const condition = results.some((res) => res);
 

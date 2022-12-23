@@ -1,5 +1,5 @@
 const userValidator = require('../validator/user.validator');
-const userService = require('../service/user.service');
+const { userService } = require('../service');
 const ApiError = require('../error/ApiError');
 const commonValidator = require('../service/common.service');
 
@@ -23,7 +23,7 @@ module.exports = {
 
   checkIsEmailUnique: async (req, res, next) => {
     try {
-      const { email } = req.body;
+      const { email, phone } = req.body;
 
       if (!email) {
         throw new ApiError('email not walid', 409);
@@ -32,6 +32,12 @@ module.exports = {
       const user = await userService.findByOneParams({ email });
 
       if (user) {
+        throw new ApiError('User with this email already exist', 409);
+      }
+
+      const userPhone = await userService.findByOneParams({ phone });
+
+      if (userPhone) {
         throw new ApiError('User with this email already exist', 409);
       }
 
